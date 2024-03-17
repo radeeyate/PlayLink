@@ -93,4 +93,19 @@ To leverage PlayLink's functionalities within your Playdate project, follow thes
 
    This code establishes a callback function that executes whenever the Playdate receives a serial message. The `playlink.process` function handles the message and calls the `request_return` function (or whichever function you specify as the second argument) once the request is complete. The `body` parameter within `request_return` holds the response data from the server.
 
+**5. Make a GET Request**
+
+   Once you've completed the setup steps, you can start making HTTP GET requests to retrieve data from a server. Here's how:
+
+   ```lua
+   playlink.get("https://www.example.com/api/data")  -- Replace with the actual URL
+
+   -- The callback function (request_return) will be called with the response body
+   -- upon successful completion of the request.
+   ```
+
+   The `playlink.get` function takes the target URL (including protocol) as a string argument. Remember to replace `"https://www.example.com/api/data"` with the actual URL you want to fetch data from.
+
+   Upon successful retrieval of data from the server, your previously defined callback function (`request_return` in this example) will be invoked with the response body containing the fetched data. You can then parse and utilize the data within your Playdate game or app.
+
 **Note:** Presently, PlayLink only returns JSON responses. Support for other response formats will be added in future updates.
