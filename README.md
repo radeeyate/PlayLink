@@ -1,7 +1,7 @@
 # PlayLink
 
 PlayLink is a protocol for the Playdate console that allows you to make arbitrary HTTP(S) requests.
-It uses the Playdate serial interfact to interact with the "server" running on a computer.
+It uses the Playdate serial interface to interact with the "server" running on a computer.
 
 ## Running the server
 
