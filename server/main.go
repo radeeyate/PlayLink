@@ -1,8 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -73,11 +73,14 @@ func main() {
 					case "init":
 						fmt.Println("Sending initialized message...")
 						port.Write([]byte("msg playlink|init_ok|0.0.1\n"))
+					case "ping":
+						port.Write([]byte("msg playlink|pong|0.0.1\n"))
 					case "connected":
 						fmt.Println("Playdate successfully connected!")
 					case "request":
 						method := strings.Split(line, "|")[3]
 						url := strings.Split(line, "|")[4]
+						identifier := strings.Split(line, "|")[5]
 						fmt.Println("Received request for " + url + " with method " + method)
 						if method == "GET" {
 							client := resty.New()
@@ -95,9 +98,14 @@ func main() {
 								if err != nil {
 									log.Fatal(err)
 								}
+								//headers := resp.Header()
 
-								port.Write([]byte("msg playlink|response|" + strconv.Itoa(resp.StatusCode()) + "\n"))
-								//randNum := rand.Int()
+								//for key, values := range headers {
+								//	fmt.Println("Key:", key, "Values:", values)
+								//}
+
+								port.Write([]byte("msg playlink|response|" + strconv.Itoa(resp.StatusCode()) + "|" + base64.StdEncoding.EncodeToString([]byte(identifier)) + "\n"))
+								
 								port.Write([]byte("msg " + "startresp|" + "\n"))
 								for _, section := range splitString(string(bodyJSON), 85) {
 									//fmt.Println("part: " + base64.StdEncoding.EncodeToString([]byte(section)))
@@ -115,23 +123,25 @@ func main() {
 					port.Write([]byte("msg playlink|err_ver|" + version + "\n")) // send message to serial saying wrong version, along with the expected version
 				}
 			}
-			//if strings.HasPrefix(line, "recv") {
-			//	fmt.Println(line)
-			//}
+			if len(os.Args) > 1 && os.Args[1] == "--debug" {
+				if strings.HasPrefix(line, "recv") {
+					fmt.Println(line)
+				}
+			}
 		}
 	}
 }
 
 func splitString(s string, chunkSize int) []string {
-    var chunks []string
+	var chunks []string
 
-    for i := 0; i < len(s); i += chunkSize {
-        end := i + chunkSize
-        if end > len(s) {
-            end = len(s)
-        }
-        chunks = append(chunks, s[i:end])
-    }
+	for i := 0; i < len(s); i += chunkSize {
+		end := i + chunkSize
+		if end > len(s) {
+			end = len(s)
+		}
+		chunks = append(chunks, s[i:end])
+	}
 
-    return chunks
+	return chunks
 }
