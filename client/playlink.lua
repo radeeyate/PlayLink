@@ -62,7 +62,7 @@ local function process(packet)
     if packet:find("response") ~= nil then
         readingResp = "init"
         print("recv: resp: " .. packet)
-        status_code = split(packet, "|")[3]
+        status_code = tonumber(split(packet, "|")[3])
         identifier = base64.decode(split(packet, "|")[4])
     end
 end
